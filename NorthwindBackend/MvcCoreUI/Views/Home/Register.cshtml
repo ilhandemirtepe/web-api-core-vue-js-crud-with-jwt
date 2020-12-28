@@ -1,0 +1,175 @@
+﻿@{
+    Layout = "";
+}
+
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style type="text/css">
+        /* Bordered form */
+        form {
+            border: 3px solid #f1f1f1;
+        }
+
+        /* Full-width inputs */
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        /* Set a style for all buttons */
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+            /* Add a hover effect for buttons */
+            button:hover {
+                opacity: 0.8;
+            }
+
+        /* Extra style for the cancel button (red) */
+        .cancelbtn {
+            width: auto;
+            padding: 10px 18px;
+            background-color: #f44336;
+        }
+
+        /* Center the avatar image inside this container */
+        .imgcontainer {
+            text-align: center;
+            margin: 24px 0 12px 0;
+        }
+
+        /* Avatar image */
+        img.avatar {
+            width: 40%;
+            border-radius: 50%;
+        }
+
+        /* Add padding to containers */
+        .container {
+            padding: 16px;
+        }
+
+        /* The "Forgot password" text */
+        span.psw {
+            float: right;
+            padding-top: 16px;
+        }
+
+        /* Change styles for span and cancel button on extra small screens */
+        @@media screen and (max-width: 300px) {
+            span.psw {
+                display: block;
+                float: none;
+            }
+
+            .cancelbtn {
+                width: 100%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    @*<link href="~/lib/bootstrap/bootstrap.min.css" rel="stylesheet" />*@
+    <link href="~/lib/toastr.js/toastr.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="appRegister">
+        <!-- Modal -->
+        <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 style="text-align:center" class="modal-title" id="exampleModalLabel">Kayıt Ol</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="imgcontainer" style="text-align:center">
+                                <input v-model="email" style="text-align:center" type="text" placeholder="email adresinizi giriniz" required>
+                                <input v-model="password" style="text-align:center" type="password" placeholder="şifrenizi giriniz" required>
+
+                                <input v-model="firstname" style="text-align:center" type="text" placeholder="adınızı giriniz">
+                                <input v-model="lastname" style="text-align:center" type="text" placeholder="soyadınızı giriniz">
+
+                                <button v-on:click="register" type="button">Kayıt Ol</button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/bootstrap.min.js"></script>
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script src="~/lib/vue/vue@2.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#appRegister',
+            data: {
+                email: "",
+                password: "",
+                firstname: "",
+                lastname:""
+
+            },
+            created: function ()
+            {
+                this.showRegisterModal();
+            },
+            methods: {
+                showRegisterModal: function ()
+                {
+                    $("#registerModal").modal("show");
+                },
+                register: function ()
+                {
+                    var vm = this;
+                    var userForRegisterDto = {
+                        email: vm.email,
+                        password: vm.password,
+                        firstname: vm.firstname,
+                        lastname: vm.lastname
+                    };
+                    $.ajax({
+                        url: "http://localhost:52739/api/auth/register",
+                        data: JSON.stringify(userForRegisterDto),
+                        type: "POST",
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json",
+                        success: function (result)
+                        {
+                            if (result.token !== null && result.token !== '') {
+                                toastr.success("Kayıt işlemi başarılı.Login Sayfasına yönlendiriliyorsunuz");
+                               
+                                window.location.replace("Login");
+                            }
+                            else
+                            {
+                                toastr.error(result);
+                            }
+                           
+                        },
+                        error: function (errormessage) {
+                            toastr.error(errormessage);
+                        }
+                    });                    
+                }
+            }
+        });
+    </script>
+</body>
+</html>
